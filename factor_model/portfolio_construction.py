@@ -1,14 +1,34 @@
+from momentum import MOM
+from CryptoCompare import CryptoCompare
+import json
+import math
 import pandas as pd
 import random
-import math
+
+all_symbols = []
+cc = CryptoCompare()
+request = cc.fetch_all()
+data = json.loads((request.content).decode('utf-8'))
+for s in data.get('Data'):
+    all_symbols.append(s)
+
+mom_factor = MOM(all_symbols)
+mom_factor.print_caps()
+
+
+
+
+
 
 data = pd.DataFrame(columns = ['Coin','Market-Cap','Momentum'])
-for i in  range(20):#####JUST USING RANDOM VALUES FOR TESTING PURPOSES
-    new_row = {'Coin': 'COIN' + str(i), 'Market-Cap': random.randint(0,200), 'Momentum': random.randint(-50,50)}
+#for i in  range(20):#####JUST USING RANDOM VALUES FOR TESTING PURPOSES
+for coin in mom_factor.market_caps:
+    mom_list = mom_factor.market_caps.get(coin)
+    new_row = {'Coin': coin, 'Market-Cap': mom_list[len(mom_list)-1], 'Momentum': mom_factor.momentum.get(coin)}
     data = data.append(new_row, ignore_index = True)
 #print(data)
 
-data = data[data['Market-Cap'] >= 100]
+data = data[data['Market-Cap'] >= 1000000]
 print(data)
 
 data = data.sort_values(by = ['Market-Cap'],ascending= False)
@@ -112,6 +132,8 @@ small_down = small.iloc[index_small_down +1:]
 print(small_up)
 print(small_middle)
 print(small_down)
+
+
 
 
 

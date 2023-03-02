@@ -38,8 +38,8 @@ class MOM:
     def compute_mom(self,coin_name):
          
          
-                close_today =self.returns[coin_name][len(self.returns)]
-                close_three_weeks_ago = self.returns[coin_name][(len(self.returns))-21]
+                close_today =self.prices[coin_name][len(self.prices[coin_name])-1]
+                close_three_weeks_ago = self.prices[coin_name][0]
                 self.momentum[coin_name] = close_today-close_three_weeks_ago
            
 
