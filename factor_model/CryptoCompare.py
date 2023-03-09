@@ -21,18 +21,18 @@ class CryptoCompare:
                         e: str = 'CCCAGG',
                         ):
 
-        header = self.key
         header['fsym'] = fsym
         header['tsym'] = tsym
         header['e'] = e
         header['limit'] = limit
 
 
-
+        # let's add tsym, e in get
         return requests.get(
            f"https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym}&tsym=USD&limit={limit}",
-           headers=header)
+           headers=self.key)
 
+    # get rid of this if not needed
     def order_book_l1(self):
         return requests.get(
             "https://min-api.cryptocompare.com/data/ob/l1/top?fsyms=BTC,"
@@ -43,10 +43,12 @@ class CryptoCompare:
         return requests.get(
             "https://min-api.cryptocompare.com/data/v2/ob/l2/snapshot",
             headers=self.key)
-    
+
+    # do self.key
     def fetch_all(self):
         return requests.get("https://min-api.cryptocompare.com/data/blockchain/list?api_key=944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e")
-    
+
+    # do self.key
     def get_latest(self,fsym: str):
         return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/latest?fsym={fsym}&api_key=944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e")
 

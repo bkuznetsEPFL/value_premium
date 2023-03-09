@@ -9,6 +9,8 @@ all_symbols = []
 cc = CryptoCompare()
 request = cc.fetch_all()
 data = json.loads((request.content).decode('utf-8'))
+
+# avoid for loop
 for s in data.get('Data'):
     all_symbols.append(s)
 
@@ -34,9 +36,12 @@ print(data)
 data = data.sort_values(by = ['Market-Cap'],ascending= False)
 print("After sorting by Market Capitalization")
 print(data)
+
+# better quantiles here
 index_up = math.floor(len(data)*0.3)
 index_down = math.floor(len(data)*0.7)
 
+# quantiles, not efficient
 data_up = data.iloc[:index_up+1]
 data_middle = data.iloc[index_up+1: index_down+1]
 data_down = data.iloc[index_down+1:]
@@ -88,7 +93,7 @@ print("\n")
 
 #### AFTER constructing THE SIZE Portfolio and the  WEIGHTS WE WILL FIND THE MOMENTUM Portfolio and its WEIGHTS ####
 
-
+# better np I think
 index_half = math.floor(len(data)*0.5)
 
 big = data.iloc[:index_half+1]
@@ -107,6 +112,8 @@ print("\n")
 big = big.sort_values(by = ['Momentum'],ascending= False)
 
 print("After sorting Momentum big")
+
+# better np here
 index_big_up = math.floor(len(big)*0.3)
 index_big_down = math.floor(len(big)*0.7)
 
