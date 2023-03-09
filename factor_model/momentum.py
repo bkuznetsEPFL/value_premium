@@ -17,6 +17,9 @@ class MOM:
     def __init__(self, coins_list):
         cc = CryptoCompare()
         for coin in coins_list:
+                # I would set limit=2000 and fetch everything, then
+                # compute momentum values for all dates at once, e.g.
+                # not dict but dataframe and without for loop below
                 fetch = cc.daily_pair_ohlc(coin, 'USD', '21')
                 latest = cc.get_latest(coin)
                 data = json.loads((fetch.content).decode('utf-8'))
@@ -40,6 +43,7 @@ class MOM:
          
                 close_today =self.prices[coin_name][len(self.prices[coin_name])-1]
                 close_three_weeks_ago = self.prices[coin_name][0]
+                # this is not 3-week return though
                 self.momentum[coin_name] = close_today-close_three_weeks_ago
            
 
