@@ -9,7 +9,7 @@ class CryptoCompare:
     to try various endpoints.
     """
     # Java's enterprise API key (see Skype chat)
-    KEY = '944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e'
+    KEY = '7d9161a5c19464276f169286ae5a8d9a716de6dacecf825e14167c6783dc4348'
 
     def __init__(self):
         self.key = {"Apikey": CryptoCompare.KEY}
@@ -21,10 +21,10 @@ class CryptoCompare:
                         e: str = 'CCCAGG',
                         ):
 
-        header['fsym'] = fsym
-        header['tsym'] = tsym
-        header['e'] = e
-        header['limit'] = limit
+        # header['fsym'] = fsym
+        # header['tsym'] = tsym
+        # header['e'] = e
+        # header['limit'] = limit
 
 
         # let's add tsym, e in get
@@ -46,9 +46,9 @@ class CryptoCompare:
 
     # do self.key
     def fetch_all(self):
-        return requests.get("https://min-api.cryptocompare.com/data/blockchain/list?api_key=944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e")
+        return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/list?api_key={self.KEY}")
 
     # do self.key
     def get_latest(self,fsym: str):
-        return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/latest?fsym={fsym}&api_key=944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e")
+        return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/latest?fsym={fsym}&api_key={self.KEY}")
 
