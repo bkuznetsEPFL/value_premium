@@ -9,7 +9,9 @@ class CryptoCompare:
     to try various endpoints.
     """
     # Java's enterprise API key (see Skype chat)
-    KEY = '7d9161a5c19464276f169286ae5a8d9a716de6dacecf825e14167c6783dc4348'
+    # Key 1: 944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e 
+    # Key 2 (Thomas) : 7d9161a5c19464276f169286ae5a8d9a716de6dacecf825e14167c6783dc4348
+    KEY = '944903d112f984bfb475209cfa6e802c44dfa72f582a7f14f50961fca1a31d6e'
 
     def __init__(self):
         self.key = {"Apikey": CryptoCompare.KEY}

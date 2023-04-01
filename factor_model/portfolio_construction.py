@@ -1,18 +1,18 @@
-from momentumm import MOM
+from momentum import MOM
 from CryptoCompare import CryptoCompare
 import json
-import math
 import pandas as pd
-import random
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 all_symbols = []
 cc = CryptoCompare()
 request = cc.fetch_all()
 data = json.loads((request.content).decode('utf-8'))
 
-all_symbols = [str(s) for s in data.get('Data')]
+#all_symbols = [str(s) for s in data.get('Data')]
+all_symbols = ['BTC','ETH']
+# all_symbols = ','.join(all_symbols)
 print(len(all_symbols))
 
 mom_factor = MOM(all_symbols)
@@ -204,17 +204,23 @@ size_ret.to_csv('SIZE_RETURNS_test.csv',sep =',', index = False)
 headers = ['Market Portfolio Returns']
 
 df_market = pd.read_csv('MARKET_RETURNS_test.csv', names=headers)
+#df_market.index = pd.DatetimeIndex(df_market.index)
+#df_market = df_market.reindex(pd.date_range("2022-10-06", "2023-03-23"))
 df_market = df_market.replace([np.inf, -np.inf], np.nan).dropna(axis=0)
 df_market = df_market.mask(df_market.eq('None')).dropna()
+df_market['date'] = pd.date_range(end= '23/03/2023', periods=len(df_market), freq='D')
+df_market.set_index(['date'],inplace=True)
 
 df_market['Market Portfolio Returns'] +=1
 df_market = df_market.cumprod()
 
 headers = ['Size Portfolio Returns']
 
-df_size = pd.read_csv('SIZE_RETURNS_test.csv', names=headers)
+df_size = pd.read_csv('SIZE_RETURNS_test.csv', names=headers, parse_dates=True)
 df_size = df_size.replace([np.inf, -np.inf], np.nan).dropna(axis=0)
 df_size = df_size.mask(df_size.eq('None')).dropna()
+df_size['date'] = pd.date_range(end= '23/03/2023', periods=len(df_size), freq='D')
+df_size.set_index(['date'],inplace=True)
 
 df_size['Size Portfolio Returns'] +=1
 df_size = df_size.cumprod()
@@ -225,6 +231,7 @@ df_size.plot(ax=ax)
 plt.xlabel("Date")
 plt.ylabel("Value of 1 dollar invested")
 plt.show()
+
 
 
 
