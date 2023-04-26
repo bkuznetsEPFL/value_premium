@@ -23,34 +23,26 @@ class CryptoCompare:
                         e: str = 'CCCAGG',
                         ):
 
-        # header['fsym'] = fsym
-        # header['tsym'] = tsym
-        # header['e'] = e
-        # header['limit'] = limit
-
-
         # let's add tsym, e in get
         return requests.get(
-           f"https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym}&tsym=USD&limit={limit}",
+           f"https://min-api.cryptocompare.com/data/v2/histoday?fsym={fsym}&tsym={tsym}&limit={limit}",
            headers=self.key)
 
-    # get rid of this if not needed
-    def order_book_l1(self):
-        return requests.get(
-            "https://min-api.cryptocompare.com/data/ob/l1/top?fsyms=BTC,"
-            "ETH&tsyms=USD,EUR&e=coinbase",
-            headers=self.key)
-
-    def order_book_l2(self):
-        return requests.get(
-            "https://min-api.cryptocompare.com/data/v2/ob/l2/snapshot",
-            headers=self.key)
-
-    # do self.key
     def fetch_all(self):
+        """
+        Fetch names of all available coins.
+        """
         return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/list?api_key={self.KEY}")
 
-    # do self.key
     def get_latest(self,fsym: str):
+        """
+        Fetch latest data for a given coin.
+        """
         return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/latest?fsym={fsym}&api_key={self.KEY}")
+
+    def get_historical(self,fsym: str,limit: str):
+        """
+        Fetch historical data for a given coin.
+        """
+        return requests.get(f"https://min-api.cryptocompare.com/data/blockchain/histo/day?fsym={fsym}&limit={limit}&api_key={self.KEY}")
 

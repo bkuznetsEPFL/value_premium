@@ -1,6 +1,5 @@
 import pandas as pd
 from CryptoCompare import CryptoCompare
-from datetime import datetime
 import json
 import numpy as np
 
@@ -14,89 +13,58 @@ class MOM:
     """
 
 
-    # def __init__(self, coins_list):
-    #     cc = CryptoCompare()
-    #     self.dfprices = pd.DataFrame(columns = coins_list)
-    #     self.dfmarket_caps = pd.DataFrame(columns = coins_list)
-    #     self.dfmomentum = pd.DataFrame(columns = coins_list)
-    #     self.dfreturns= pd.DataFrame(columns = coins_list)
-    #     print("IN MOMENTUM RETURN")
-    #     print(len(self.dfreturns.columns))
-    #     for coin in coins_list:
-    #         fetch = cc.daily_pair_ohlc(coin, 'USD', '168')
-    #         latest = cc.get_latest(coin)
-    #         data = json.loads((fetch.content).decode('utf-8'))
-    #         print(data)
-    #         data2 = json.loads((latest.content).decode('utf-8'))
-    #         dict = ((data.get('Data')).get('Data'))
-    #         total_supply = ((data2.get('Data').get('current_supply')))
-    #         if dict is not None:
-    #             close_prices = [float(x.get("close")) for x in dict]
-    #             market_caps = [float(x.get("close")) * float(total_supply) for x in dict]
-    #             self.dfprices[str(coin)] = close_prices
-    #             self.dfmarket_caps[str(coin)] = market_caps
-
-    #     self.dfprices.replace(0, np.nan, inplace=True)
-    #     self.dfmomentum = (self.dfprices - self.dfprices.shift(21))/self.dfprices.shift(21)
-    #     #self.dfprices = self.dfprices.ffill()
-    #     self.dfreturns = (self.dfprices - self.dfprices.shift(1))/ self.dfprices.shift(1)
-    #     self.dfreturns.to_csv('returns222.csv', sep =',', index = False)
-    #     self.dfmomentum.to_csv('momentum222.csv', sep =',', index = False)
-    #     self.dfmarket_caps.to_csv('mkcaps222.csv',sep =',', index = False)
-    #     self.dfprices.to_csv('prices.csv',sep =',', index = False)
-
-           
-
-    # def print_mom(self):
-    #     print(self.momentum)
-    
-    # def print_prices(self):
-    #     print(self.prices)
-    
-    # def print_caps(self):
-    #     print(self.market_caps)     
-    # 
     def __init__(self, coins_list):
         cc = CryptoCompare()
         self.dfprices = pd.DataFrame(columns = coins_list)
         self.dfmarket_caps = pd.DataFrame(columns = coins_list)
+        self.dfvolume = pd.DataFrame(columns = coins_list)
         self.dfmomentum = pd.DataFrame(columns = coins_list)
         self.dfreturns= pd.DataFrame(columns = coins_list)
-        print("IN MOMENTUM RETURN")
-        print(len(self.dfreturns.columns))
-        fsym = ['BTC','ETH']
-        sym = ','.join(fsym)
-        fetch = cc.daily_pair_ohlc(sym, 'USD', '168')
-        latest = cc.get_latest(sym)
-        data = json.loads((fetch.content).decode('utf-8'))
-        print(data)
-        data2 = json.loads((latest.content).decode('utf-8'))
-        dict = ((data.get('Data')).get('Data'))
-        total_supply = ((data2.get('Data').get('current_supply')))
-        if dict is not None:
-            close_prices = [float(x.get("close")) for x in dict]
-            market_caps = [float(x.get("close")) * float(total_supply) for x in dict]
-            # self.dfprices[str(coin)] = close_prices
-            # self.dfmarket_caps[str(coin)] = market_caps
+       
 
+        for coin in coins_list: 
+            i=0
+    
+
+            fetch = cc.daily_pair_ohlc(coin, 'USD', '150')
+            historical = cc.get_historical(coin, '150')
+            data = json.loads((fetch.content).decode('utf-8'))
+            data2 = json.loads((historical.content).decode('utf-8'))
+            dict = ((data.get('Data')).get('Data'))
+            dict2 = ((data2.get('Data')).get('Data'))
+            total_supply = []
+            
+            
+            total_supply = [x.get('current_supply') if x.get('current_supply') is not None else 0  for x in dict2]
+           
+            if ((dict is not None) and (len(dict2)== len(dict)-1)):
+                dict = dict[1:]
+                close_prices = [float(x.get("close")) if float(x.get("close")) > 0.01 else np.nan  for x in dict]
+                market_caps=[]
+                for x in dict :
+                  
+                    if i < len(total_supply):
+                        close = float(x.get("close"))
+                        supply = float(total_supply[i])
+                        cap = close * supply
+                        market_caps.append(cap)
+                        i+=1
+                        
+                volume = [float(x.get("volumeto"))  if x.get("volumeto") is not None else 0 for x in dict ]
+                self.dfvolume[str(coin)] = volume
+                self.dfprices[str(coin)] = close_prices
+                self.dfmarket_caps[str(coin)] = market_caps
+
+        
         self.dfprices.replace(0, np.nan, inplace=True)
-        self.dfmomentum = (self.dfprices - self.dfprices.shift(21))/self.dfprices.shift(21)
-        #self.dfprices = self.dfprices.ffill()
         self.dfreturns = (self.dfprices - self.dfprices.shift(1))/ self.dfprices.shift(1)
-        self.dfreturns.to_csv('returns222.csv', sep =',', index = False)
-        self.dfmomentum.to_csv('momentum222.csv', sep =',', index = False)
-        self.dfmarket_caps.to_csv('mkcaps222.csv',sep =',', index = False)
-        self.dfprices.to_csv('prices.csv',sep =',', index = False)
+        self.dfmomentum = (self.dfreturns - self.dfreturns.shift(21))/self.dfreturns.shift(21)
+
+        self.dfmomentum.to_csv('data/dfmoms.csv', sep =',', index = False)
+        self.dfmarket_caps.to_csv('data/dfmkcaps.csv',sep =',', index = False)
+        self.dfreturns.to_csv('data/dfreturns.csv',sep =',', index = False)
+        self.dfvolume.to_csv('data/dfvolume.csv',sep =',', index = False)
+        self.dfreturns.to_csv('data/dfreturns.csv',sep =',', index = False)
+        
 
            
-
-    def print_mom(self):
-        print(self.momentum)
-    
-    def print_prices(self):
-        print(self.prices)
-    
-    def print_caps(self):
-        print(self.market_caps)      
-     
-    
